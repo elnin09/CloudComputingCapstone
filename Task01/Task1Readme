@@ -6,3 +6,4 @@ Task 1 details
 3) queries2.sql query for Task2
 4) queries3.sql query for Task3
 5) batch.sql is running queryies to check output on Hive
+6) file cleaner cleans the file
