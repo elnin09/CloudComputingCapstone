@@ -1,0 +1,8 @@
+
+Task 1 details
+
+1) SetupDB.sql setups database and reads file
+2) queries.sql query for Task1
+3) queries2.sql query for Task2
+4) queries3.sql query for Task3
+5) batch.sql is running queryies to check output on Hive
