@@ -12,7 +12,8 @@ def toCSVLine(data):
 
 
 def printresults(time,rdd):
-     for record in rdd.take(10):
+    print("New streaming data")
+    for record in rdd.take(10):
           print(','.join([record[0], str(record[1])]))
 
 
@@ -70,6 +71,7 @@ def finalmap(x):
 
 conf = SparkConf().setMaster("local[2]").setAppName("Streamer")
 sc = SparkContext(conf=conf)
+sc.setLogLevel("ERROR")
 
 ssc = StreamingContext(sc,5)
 print('ssc =================== {} {}')

@@ -23,8 +23,12 @@ def printresults(time,rdd):
     #print((df.count(), len(df.columns)))
     #print("betichod")
     #df.write.format("org.apache.spark.sql.cassandra").options(table="output2_1", keyspace="cloudcomputingcapstone").save()
-    for record in rdd.collect():
-        print(','.join([record[0], str(record[1])]))
+    keys= ["LGA,BOS","BOS,LGA","OKC,DFW","MSP,ATL"]
+    print("New streaming data")
+    for record in rdd.collect(): 
+        if record[0] in keys:
+            print(','.join([record[0], str(record[1])]))
+
 """
 def savetocassandra(time,rdd):
     cluster=Cluster()
@@ -91,6 +95,7 @@ def finalmap(x):
 
 conf = SparkConf().setMaster("local[2]").setAppName("Streamer")
 sc = SparkContext(conf=conf)
+sc.setLogLevel("ERROR")
 
 ssc = StreamingContext(sc,5)
 sqlContext = sql.SQLContext(sc)
@@ -102,10 +107,10 @@ kstream = KafkaUtils.createDirectStream(ssc, topics = ['testing12345'],
 print('contexts =================== {} {}')
 lines = kstream.map(lambda x: x[1])
 datanew = lines.map(lambda x:mapperfunction(x))
-datanew.pprint()
+#datanew.pprint()
 wcreduce = datanew.reduceByKey(lambda a, b: reducefunction(a,b)).updateStateByKey(updatefunction)
-wcreduce.pprint()
-#wcreduce = wcreduce.map(lambda x:finalmap(x))
+#wcreduce.pprint()
+wcreduce = wcreduce.map(lambda x:finalmap(x))
 
 rdd = wcreduce.transform(lambda rdd: rdd.sortBy(lambda x: x[0], ascending=True)).foreachRDD(printresults)
 if rdd is not None:

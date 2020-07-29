@@ -22,8 +22,12 @@ def printresults(time,rdd):
     #print((df.count(), len(df.columns)))
     #print("betichod")
     #df.write.format("org.apache.spark.sql.cassandra").options(table="output2_1", keyspace="cloudcomputingcapstone").save()
-    for record in rdd.collect():
-        print(','.join([record[0], str(record[1])]))
+    keys= ["SRQ","CMH","JFK","SEA","BOS"]
+    print("New streaming data")
+    for record in rdd.collect(): 
+        a = re.split(",",record[0])
+        if a[0] in keys:
+            print(','.join([record[0], str(record[1])]))
 """
 def savetocassandra(time,rdd):
     cluster=Cluster()
@@ -90,6 +94,7 @@ def finalmap(x):
 
 conf = SparkConf().setMaster("local[2]").setAppName("Streamer")
 sc = SparkContext(conf=conf)
+sc.setLogLevel("ERROR")
 
 ssc = StreamingContext(sc,5)
 sqlContext = sql.SQLContext(sc)
@@ -106,7 +111,7 @@ wcreduce = datanew.reduceByKey(lambda a, b: reducefunction(a,b)).updateStateByKe
 wcreduce.pprint()
 wcreduce = wcreduce.map(lambda x:finalmap(x))
 
-rdd = wcreduce.transform(lambda rdd: rdd.sortBy(lambda x: x[1], ascending=True)).foreachRDD(printresults)
+rdd = wcreduce.transform(lambda rdd: rdd.sortBy(lambda x: x[0], ascending=True)).foreachRDD(printresults)
 if rdd is not None:
     rdd.saveAsTextFile('output.csv')
 

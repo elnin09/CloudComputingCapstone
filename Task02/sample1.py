@@ -28,6 +28,7 @@ conf = SparkConf().setMaster("local[2]").setAppName("Streamer")
 sc = SparkContext(conf=conf)
 
 ssc = StreamingContext(sc,5)
+sc.setLogLevel("ERROR")
 print('ssc =================== {} {}')
 ssc.checkpoint("/tmp/streaming")
 kstream = KafkaUtils.createDirectStream(ssc, topics = ['testing12345'], 
