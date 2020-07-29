@@ -18,9 +18,7 @@ def toCSVLine(data):
 def printresults(time,rdd): 
     #df = sc.createDataFrame(rdd).toDF("id", "vals")
     #df.show()
-    #print("bhadwe")
     #print((df.count(), len(df.columns)))
-    #print("betichod")
     #df.write.format("org.apache.spark.sql.cassandra").options(table="output2_1", keyspace="cloudcomputingcapstone").save()
     keys= ["LGA,BOS","BOS,LGA","OKC,DFW","MSP,ATL"]
     print("New streaming data")
