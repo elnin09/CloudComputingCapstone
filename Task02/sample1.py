@@ -12,6 +12,7 @@ def toCSVLine(data):
 
 
 def printresults(time,rdd):
+     print("New streaming data")
      for record in rdd.take(10):
           print(','.join([record[0], str(record[1])]))
 
