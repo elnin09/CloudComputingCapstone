@@ -63,7 +63,7 @@ def mapperfunction(line):
     #retval.append(values[14])
     #print("map phase start")
     try:
-        if(float(values[11])>1200 and float(values[0]==2008)):
+        if(float(values[11])>1200 and float(values[0])==2008):
             print("check 1SS")
             return((values[9]+','+values[10]+','+values[5],[float(values[14]),values[6],values[8],values[11]]))
         else:
@@ -130,7 +130,7 @@ wcreduce1 = datanew1.reduceByKey(lambda a, b: reducefunction(a,b)).updateStateBy
 #wcreduce = wcreduce.map(lambda x:finalmap(x))
 
 rdd = wcreduce.transform(lambda rdd: rdd.sortBy(lambda x: x[0], ascending=True)).foreachRDD(printresults)
-rdd1 = wcreduce.transform(lambda rdd: rdd.sortBy(lambda x: x[0], ascending=True)).foreachRDD(printresults)
+rdd1 = wcreduce1.transform(lambda rdd: rdd.sortBy(lambda x: x[0], ascending=True)).foreachRDD(printresults)
 #if rdd is not None:
     #rdd.saveAsTextFile('output.csv')
 
