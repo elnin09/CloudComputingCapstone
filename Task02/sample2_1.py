@@ -7,7 +7,7 @@ import re
 import sys
 from pyspark.sql import SQLContext
 from pyspark import sql
-#from cassandra.cluster import Cluster
+from cassandra.cluster import Cluster
 
 os.environ['PYSPARK_SUBMIT_ARGS'] = '--jars /spark-2.1.1-bin-hadoop2.6/spark-streaming-kafka-0-8-assembly_2.11-2.1.0.jar pyspark-shell'
 
@@ -21,7 +21,15 @@ def printresults(time,rdd):
     #df.write.format("org.apache.spark.sql.cassandra").options(table="output2_1", keyspace="cloudcomputingcapstone").save()
     keys= ["SRQ","CMH","JFK","SEA","BOS"]
     print("New streaming data")
-    for record in rdd.collect(): 
+    for record in rdd.collect():
+        cluster = Cluster()
+        session = cluster.connect()
+        session.execute('use cloudcomputingcapstone')
+        key = str(record[0])
+        value = str(record[1][0][0])+ "," + str(record[1][0][1])+ ","+ str(record[1][0][2])+ "," + str(record[1][0][3]) 
+        query = "insert into output3_2_FirstLeg(key,value) values('"+key+"','"+value+"')"
+        #print(query)
+        session.execute(query) 
         a = re.split(",",record[0])
         if a[0] in keys:
             print(','.join([record[0], str(record[1])]))

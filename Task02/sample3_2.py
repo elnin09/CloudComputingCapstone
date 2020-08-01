@@ -5,10 +5,15 @@ from pyspark.streaming.kafka import KafkaUtils
 import json
 import re
 import sys
+import platform
+print("version is ------------")
+print(platform.python_version())
+print("version is --------")
+sys.path.append("/usr/local/lib/python2.7/site-packages")
 from pyspark.sql import SQLContext
 from pyspark import sql
 from decimal import Decimal
-import pyspark_cassandra
+from cassandra.cluster import Cluster
 
 os.environ['PYSPARK_SUBMIT_ARGS'] = '--jars /spark-2.1.1-bin-hadoop2.6/spark-streaming-kafka-0-8-assembly_2.11-2.1.0.jar pyspark-shell'
 
@@ -16,15 +21,42 @@ def toCSVLine(data):
   return ','.join(str(d) for d in data)
 
 
-def printresults(time,rdd): 
+def printresultsfirstleg(time,rdd): 
     #df = sc.createDataFrame(rdd).toDF("id", "vals")
     #df.show()
     #print((df.count(), len(df.columns)))
     #df.write.format("org.apache.spark.sql.cassandra").options(table="output2_1", keyspace="cloudcomputingcapstone").save()
-    #keys= ["LGA,BOS","BOS,LGA","OKC,DFW","MSP,ATL"]
-    rdd.collect().saveToCassandra("cloudcomputingcapstone","newtable")
+    #keys= ["LGA,BOS","BOS,LGA","OKC,DFW","MSP,ATL"]    
     print("New streaming data")
-    for record in rdd.collect(): 
+    for record in rdd.collect():
+        cluster = Cluster()
+        session = cluster.connect()
+        session.execute('use cloudcomputingcapstone')
+        key = str(record[0])
+        value = str(record[1][0][0])+ "," + str(record[1][0][1])+ ","+ str(record[1][0][2])+ "," + str(record[1][0][3]) 
+        query = "insert into output3_2_FirstLeg(key,value) values('"+key+"','"+value+"')"
+        #print(query)
+        session.execute(query)
+        if True or record[0] in keys:
+            print(','.join([record[0], str(record[1])]))
+
+
+def printresultssecondleg(time,rdd): 
+    #df = sc.createDataFrame(rdd).toDF("id", "vals")
+    #df.show()
+    #print((df.count(), len(df.columns)))
+    #df.write.format("org.apache.spark.sql.cassandra").options(table="output2_1", keyspace="cloudcomputingcapstone").save()
+    #keys= ["LGA,BOS","BOS,LGA","OKC,DFW","MSP,ATL"]    
+    print("New streaming data")
+    for record in rdd.collect():
+        cluster = Cluster()
+        session = cluster.connect()
+        session.execute('use cloudcomputingcapstone')
+        key = str(record[0])
+        value = str(record[1][0][0])+ "," + str(record[1][0][1])+ ","+ str(record[1][0][2])+ "," + str(record[1][0][3]) 
+        query = "insert into output3_2_SecondLeg(key,value) values('"+key+"','"+value+"')"
+        print(query)
+        session.execute(query)
         if True or record[0] in keys:
             print(','.join([record[0], str(record[1])]))
 
@@ -64,7 +96,7 @@ def mapperfunction(line):
     #retval.append(values[14])
     #print("map phase start")
     try:
-        if(float(values[11])>1200 and float(values[0])==2008):
+        if(float(values[11])>1200 and float(values[0]==2008)):
             print("check 1SS")
             return((values[9]+','+values[10]+','+values[5],[float(values[14]),values[6],values[8],values[11]]))
         else:
@@ -130,8 +162,8 @@ wcreduce1 = datanew1.reduceByKey(lambda a, b: reducefunction(a,b)).updateStateBy
 #wcreduce.pprint()
 #wcreduce = wcreduce.map(lambda x:finalmap(x))
 
-rdd = wcreduce.transform(lambda rdd: rdd.sortBy(lambda x: x[0], ascending=True)).foreachRDD(printresults)
-rdd1 = wcreduce1.transform(lambda rdd: rdd.sortBy(lambda x: x[0], ascending=True)).foreachRDD(printresults)
+rdd = wcreduce.transform(lambda rdd: rdd.sortBy(lambda x: x[0], ascending=True)).foreachRDD(printresultsfirstleg)
+rdd1 = wcreduce1.transform(lambda rdd: rdd.sortBy(lambda x: x[0], ascending=True)).foreachRDD(printresultssecondleg)
 #if rdd is not None:
     #rdd.saveAsTextFile('output.csv')
 
