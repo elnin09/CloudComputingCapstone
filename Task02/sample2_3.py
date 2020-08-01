@@ -21,10 +21,10 @@ def printresults(time,rdd):
     #print((df.count(), len(df.columns)))
     #df.write.format("org.apache.spark.sql.cassandra").options(table="output2_1", keyspace="cloudcomputingcapstone").save()
     keys= ["LGA,BOS","BOS,LGA","OKC,DFW","MSP,ATL"]
+    cluster = Cluster()
+    session = cluster.connect()
     print("New streaming data")
     for record in rdd.collect():
-        cluster = Cluster()
-        session = cluster.connect()
         session.execute('use cloudcomputingcapstone')
         key = str(record[0])
         value = str(record[1][0][0])+ "," + str(record[1][0][1])+ ","+ str(record[1][0][2])+ "," + str(record[1][0][3]) 
@@ -34,6 +34,7 @@ def printresults(time,rdd):
         a = re.split(",",record[0])
         if a[0]+','+a[1] in keys:
             print(','.join([record[0], str(record[1])]))
+    cluster.shutdown()
 """
 def savetocassandra(time,rdd):
     cluster=Cluster()
