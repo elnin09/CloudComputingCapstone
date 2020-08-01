@@ -26,9 +26,9 @@ def printresults(time,rdd):
         cluster = Cluster()
         session = cluster.connect()
         session.execute('use cloudcomputingcapstone')
-        key = str(record[0])
-        value = str(record[1][0][0])+ "," + str(record[1][0][1])+ ","+ str(record[1][0][2])+ "," + str(record[1][0][3]) 
-        query = "insert into output2_2(key,value) values('"+key+"','"+value+"')"
+        origin,destination = re.split(",",record[0])
+        value = str(record[1]);
+        query = "insert into output2_1(origin,destination,value) values('"+str(origin)+"','"+str(destination)+"','"+value+"')"
         #print(query)
         session.execute(query) 
         a = re.split(",",record[0])
@@ -54,7 +54,7 @@ def mapperfunction(line):
     try:
         return((values[9]+','+values[10],[float(values[12]),1]))
     except:
-        return(("plaeholder",[float(99999),float(1)]))
+        return(("plaeho,lder",[float(99999),float(1)]))
 
 def reducefunction(a,b):
     #print(a,b)

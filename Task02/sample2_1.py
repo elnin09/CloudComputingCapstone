@@ -21,18 +21,19 @@ def printresults(time,rdd):
     #df.write.format("org.apache.spark.sql.cassandra").options(table="output2_1", keyspace="cloudcomputingcapstone").save()
     keys= ["SRQ","CMH","JFK","SEA","BOS"]
     print("New streaming data")
+    cluster = Cluster()
+    session = cluster.connect()
     for record in rdd.collect():
-        cluster = Cluster()
-        session = cluster.connect()
         session.execute('use cloudcomputingcapstone')
-        key = str(record[0])
-        value = str(record[1][0][0])+ "," + str(record[1][0][1])+ ","+ str(record[1][0][2])+ "," + str(record[1][0][3]) 
-        query = "insert into output3_2_FirstLeg(key,value) values('"+key+"','"+value+"')"
+        origin,carrier = re.split(",",record[0])
+        value = str(record[1]);
+        query = "insert into output2_1(origin,carrier,value) values('"+str(origin)+"','"+str(carrier)+"','"+value+"')"
         #print(query)
         session.execute(query) 
         a = re.split(",",record[0])
         if a[0] in keys:
             print(','.join([record[0], str(record[1])]))
+    cluster.shutdown()
 """
 def savetocassandra(time,rdd):
     cluster=Cluster()
@@ -53,7 +54,7 @@ def mapperfunction(line):
     try:
         return((values[9]+','+values[6],[float(values[12]),1]))
     except:
-        return(("plaeholder",[float(99999),float(1)]))
+        return(("plae,holder",[float(99999),float(1)]))
 
 def reducefunction(a,b):
     #print(a,b)
