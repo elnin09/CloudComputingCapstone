@@ -3,6 +3,7 @@ cluster = Cluster()
 session = cluster.connect()
 session.execute("use cloudcomputingcapstone\n")
 import datetime
+import re
 
 def query2_1():
     origin = input("Enter origin airport\n")
@@ -87,20 +88,36 @@ def query3_2():
     dt = datetime.datetime.strptime(str(date1),"%Y-%m-%d")
     date2 = str((dt+datetime.timedelta(days=2)).date())
     key1=str(origin)+","+str(stopover)+","+str(date1)
-    key2=str(origin)+","+str(destination)+","+str(date2)
+    key2=str(stopover)+","+str(destination)+","+str(date2)
     print("----------------------------")
     query = "select * from output3_2_FirstLeg where key ='"+str(key1)+"'"
-    print(query)
+    #print(query)
     rows = session.execute(query)
     print("Here are details of first leg")
     for row in rows:
-        print(row)
+        key = re.split(",",row.key)
+        value = re.split(",",row.value)
+        print("Source",key[0])
+        print("Destination",key[1])
+        print("Date",key[2])
+        print("Arrival delay",value[0])
+        print("Flight",str(value[1])+str(value[2]))
+        print("Time",str(value[3]))
+        
     query = "select * from output3_2_SecondLeg where key ='"+str(key2)+"'"
-    print(query)
+    #print(query)
     rows = session.execute(query)
+    print("----------------------------")
     print("Here are details of second leg")
     for row in rows:
-        print(row)
+        key = re.split(",",row.key)
+        value = re.split(",",row.value)
+        print("Source",key[0])
+        print("Destination",key[1])
+        print("Date",key[2])
+        print("Arrival delay",value[0])
+        print("Flight",str(value[1])+str(value[2]))
+        print("Time",str(value[3]))
     print("----------------------------")
 
     
