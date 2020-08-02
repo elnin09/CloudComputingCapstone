@@ -37,7 +37,7 @@ def printresultsfirstleg(time,rdd):
         query = "insert into output3_2_FirstLeg(key,value) values('"+key+"','"+value+"')"
         #print(query)
         session.execute(query)
-        if True or record[0] in keys:
+        if False or record[0] in keys:
             print(','.join([record[0], str(record[1])]))
     cluster.shutdown()
 
@@ -58,7 +58,7 @@ def printresultssecondleg(time,rdd):
         query = "insert into output3_2_SecondLeg(key,value) values('"+key+"','"+value+"')"
         #print(query)
         session.execute(query)
-        if True or record[0] in keys:
+        if False or record[0] in keys:
             print(','.join([record[0], str(record[1])]))
     cluster.shutdown()
 
