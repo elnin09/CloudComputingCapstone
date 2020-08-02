@@ -56,7 +56,7 @@ def printresultssecondleg(time,rdd):
         key = str(record[0])
         value = str(record[1][0][0])+ "," + str(record[1][0][1])+ ","+ str(record[1][0][2])+ "," + str(record[1][0][3]) 
         query = "insert into output3_2_SecondLeg(key,value) values('"+key+"','"+value+"')"
-        print(query)
+        #print(query)
         session.execute(query)
         if True or record[0] in keys:
             print(','.join([record[0], str(record[1])]))
@@ -79,8 +79,8 @@ def mapperfunction1(line):
     #retval.append(values[14])
     #print("map phase start")
     try:
-        if(float(values[11])<1200 and float(values[0]==2008)):
-            print("check 1SS")
+        if(float(values[11])>1200 and float(values[0])==2008):
+            #print("check 1SS")
             return((values[9]+','+values[10]+','+values[5],[float(values[14]),values[6],values[8],values[11]]))
         else:
             return(("plae,ho,lder",[float(99999),"randokm","random","random"]))
@@ -98,8 +98,8 @@ def mapperfunction(line):
     #retval.append(values[14])
     #print("map phase start")
     try:
-        if(float(values[11])>1200 and float(values[0]==2008)):
-            print("check 1SS")
+        if(float(values[11])<1200 and float(values[0])==2008):
+            #print("check 1SS")
             return((values[9]+','+values[10]+','+values[5],[float(values[14]),values[6],values[8],values[11]]))
         else:
             return(("plae,ho,lder",[float(99999),"randokm","random","random"]))

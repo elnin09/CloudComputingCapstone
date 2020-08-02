@@ -26,9 +26,12 @@ def printresults(time,rdd):
     print("New streaming data")
     for record in rdd.collect():
         session.execute('use cloudcomputingcapstone')
-        key = str(record[0])
-        value = str(record[1][0][0])+ "," + str(record[1][0][1])+ ","+ str(record[1][0][2])+ "," + str(record[1][0][3]) 
-        query = "insert into output2_3(key,value) values('"+key+"','"+value+"')"
+        origin,destination,carrier = re.split(",",record[0])
+        key = str(origin)+","+str(destination)
+        #print(key)
+        value = str(record[1]) 
+        #print(value)
+        query = "insert into output2_3(key,carrier,value) values('"+str(key)+"','"+str(carrier)+"','"+value+"')"
         #print(query)
         session.execute(query) 
         a = re.split(",",record[0])

@@ -28,7 +28,7 @@ def printresults(time,rdd):
     for record in rdd.collect():
         session.execute('use cloudcomputingcapstone')
         key = str(record[0])
-        value = str(record[1][0][0])+ "," + str(record[1][0][1])+ ","+ str(record[1][0][2])+ "," + str(record[1][0][3]) 
+        value = str(record[1]) 
         query = "insert into output2_4(key,value) values('"+key+"','"+value+"')"
         #print(query)
         session.execute(query)
